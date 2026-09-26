@@ -246,6 +246,14 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
                     .setWaitForAccurateLocation(false)
                     .build()
 
+                // Ein einziger Fused-Callback: Jeder Start ersetzt den vorigen.
+                // Ohne das blieb bei jedem Start ohne Stopp (onMainResume,
+                // Berechtigungsantwort) einer verwaist angemeldet, und
+                // stopGeolocationListener() erreichte ihn nicht mehr.
+                fusedLocationCallback?.let { alt ->
+                    fusedClient?.removeLocationUpdates(alt)
+                    Log.i(TAG, "FUSED_LOCATION_LISTENER: Replaced the previous callback.")
+                }
                 fusedLocationCallback = object : LocationCallback() {
                     override fun onLocationResult(result: LocationResult) {
                         val loc = result.lastLocation ?: return
@@ -398,6 +406,7 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
                 if (fusedLocationCallback != null && fusedClient != null) {
                     fusedClient?.removeLocationUpdates(fusedLocationCallback!!)
                 }
+                fusedLocationCallback = null
                 val lm = getLocationManager()
                 lm?.removeUpdates(nativeLocationListener)
                 isListeningForGeolocationUpdates = false
