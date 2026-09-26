@@ -38,10 +38,12 @@ class AndroidExportPlugin extends EditorExportPlugin:
         if debug:
             return PackedStringArray([
             "androidx.core:core-ktx:1.13.1",
+            "com.google.android.gms:play-services-location:21.0.1",
             ])
         else:
             return PackedStringArray([
                 "androidx.core:core-ktx:1.13.1",
+                "com.google.android.gms:play-services-location:21.0.1",
             ])
 
     func _get_name():
